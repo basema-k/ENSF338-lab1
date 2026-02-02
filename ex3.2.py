@@ -30,8 +30,8 @@ for n in records:
                       setup="from __main__ import change_sizes, test_data", 
                       number=100)
     avg = tm / 100
-    avgtimes.append(avg)
     print(f"Average time for {n} records: {avg}")
+    avgtimes.append(avg)
 
 # plot results
 slope, intercept = np.polyfit(records, avgtimes, 1)
