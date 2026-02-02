@@ -40,7 +40,7 @@ def createHistogram():
     highUsage = internetUsage(high)
 
     plt.figure()
-    plt.hist(low, bins=20)
+    plt.hist(lowUsage, bins=20)
     plt.title("Internet Usage (Income < 10,000)")
     plt.xlabel("Internet Usage Rate (%)")
     plt.ylabel("Number of Countries")
@@ -49,7 +49,7 @@ def createHistogram():
 
 
     plt.figure()
-    plt.hist(high, bins=20)
+    plt.hist(highUsage, bins=20)
     plt.title("Internet Usage (Income >= 10,000)")
     plt.xlabel("Internet Usage Rate (%)")
     plt.ylabel("Number of Countries")
@@ -58,6 +58,8 @@ def createHistogram():
 
 def main():
     createHistogram()
+
+main()
     
     
 
