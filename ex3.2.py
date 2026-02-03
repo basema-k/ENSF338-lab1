@@ -1,44 +1,44 @@
-import random
+import json
 import timeit
-from matplotlib import pyplot as plt
-plt.rcParams['figure.figsize'] = [10, 5]
 import numpy as np
+import matplotlib.pyplot as plt
 
+def change_sizes(x):
+    # changes all instances of size incl. nested occurances
+    if isinstance(x, dict):
+        for key in x:
+            if key == 'size':
+                x[key] = 42
+            else:
+                change_sizes(x[key])
+    elif isinstance(x, list):
+        for item in x:
+            change_sizes(item)
 
-def findinlist(n, l):
-    for i in range(len(l)):
-        if l[i] == n:
-            return True
-    return False
+with open("large_file.json", 'r', encoding='utf-8') as f:
+    data = json.load(f)
 
+# diff. numbers of records
+listlengths = [1000, 2000, 5000, 10000]
 avgtimes = []
 
-# for n records
-listlengths = [1000, 2000, 5000, 10000]
-for listlength in listlengths:
-    # make list of that length
-    numbers = [x for x in range(listlength)]
-    rez = []
-    # use 1000 different random permutations and record time to find the number 5
-    # run 100 times for accuracy
-    for i in range(1000):
-        random.shuffle(numbers)
-        tm = timeit.timeit("findinlist(5, numbers)", setup="from __main__ import findinlist, numbers", number=100)
-        rez.append(tm/100)
+for n in listlengths:
+    subset = data[:n] if isinstance(data, list) else data
+    # repeat 100 times for each n
+    time_taken = timeit.timeit(lambda: change_sizes(subset.copy()), number=100)
+    avgtimes.append(time_taken/100)
+    print(f"Processed {n} records, average time: {time_taken/100} seconds")
 
-    # compute avg. for all permutations and add to list
-    avg = sum(rez) / len(rez)
-    avgtimes.append(avg)
-    print("Average time for list of length %d: %f" % (listlength, avg))
-
-# plot
+# linear regression plotting
 slope, intercept = np.polyfit(listlengths, avgtimes, 1)
 plt.scatter(listlengths, avgtimes)
 linevalues = [slope * x + intercept for x in listlengths]
 plt.plot(listlengths, linevalues, 'r')
-plt.xlabel('# of records')
-plt.ylabel('Avg. Processing Time (s)')
-plt.title('Input Size Vs. Runtime for Linear Search')
+plt.xlabel('Number of records')
+plt.ylabel('Average processing time (seconds)')
+print("The linear model is: t = %.2e * n + %.2e" % (slope, intercept))
 plt.savefig('output.3.2.png')
 
-print("The linear model is: t = %.2e * n + %.2e" % (slope, intercept))
+change_sizes(data)
+with open("output.2.3.test.json", "w", encoding='utf-8') as output_file:
+    json.dump(data[::-1] if isinstance(data, list) else data, output_file, indent=2)
