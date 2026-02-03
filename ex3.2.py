@@ -13,21 +13,25 @@ def findinlist(n, l):
 
 avgtimes = []
 
+# for n records
 listlengths = [1000, 2000, 5000, 10000]
 for listlength in listlengths:
-    
+    # make list of that length
     numbers = [x for x in range(listlength)]
     rez = []
-
+    # use 1000 different random permutations and record time to find the number 5
+    # run 100 times for accuracy
     for i in range(1000):
         random.shuffle(numbers)
         tm = timeit.timeit("findinlist(5, numbers)", setup="from __main__ import findinlist, numbers", number=100)
         rez.append(tm/100)
 
+    # compute avg. for all permutations and add to list
     avg = sum(rez) / len(rez)
     avgtimes.append(avg)
     print("Average time for list of length %d: %f" % (listlength, avg))
 
+# plot
 slope, intercept = np.polyfit(listlengths, avgtimes, 1)
 plt.scatter(listlengths, avgtimes)
 linevalues = [slope * x + intercept for x in listlengths]
