@@ -1,39 +1,38 @@
-import json
+import random
 import timeit
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
+plt.rcParams['figure.figsize'] = [10, 5]
+import numpy as np
 
-def change_sizes(x):
-    # changes all instances of size incl. nested occurances
-    if isinstance(x, dict):
-            for key in x:
-                if key == 'size':
-                    x[key] = 42
-                else:
-                    change_sizes(x[key])
-    elif isinstance(x, list):
-        for item in x:
-            change_sizes(item)
 
-with open("large_file.json", 'r', encoding='utf-8') as f:
-    x = json.load(f)
+def findinlist(n, l):
+    for i in range(len(l)):
+        if l[i] == n:
+            return True
+    return False
 
-# first 1000 records
-test_data = x[:1000]
+listlength = 1000
 
-# avg time of 1000 runs
-times = timeit.repeat("change_sizes(test_data)", 
-                     setup="from __main__ import change_sizes, test_data", 
-                     number=1,
-                     repeat=1000)
-print(f"Average time for 1000 records: {sum(times)/1000}")
+times = []
+for _ in range(1000):
+    numbers = [x for x in range(listlength)]
+    random.shuffle(numbers)
+    tm = timeit.timeit("findinlist(5, numbers)", 
+                       setup="from __main__ import findinlist, numbers", 
+                       number=100)
+    times.append(tm/100)
 
-# make histogram
-plt.hist(times, bins=30, edgecolor='black')
-plt.title('Time Distribution for 1000 Records (1000 runs)')
-plt.xlabel('Time (seconds)')
+avg = sum(times) / len(times)
+print("Average time for list of length %d: %f" % (listlength, avg))
+
+plt.figure()
+plt.hist(times, bins=50, edgecolor='black', alpha=0.7)
+plt.xlabel('Processing Time (s)')
 plt.ylabel('Frequency')
-plt.savefig('output.3.3.png')
+plt.title('Distribution of Processing Times for Linear Search with 1000 trials')
+plt.grid(True, alpha=0.3)
 
-change_sizes(x)
-with open("output.2.3.test.json", "w", encoding='utf-8') as output_file:
-    json.dump(x[::-1], output_file, indent=2)
+plt.savefig('output.3.3.png')
+plt.show()
+
+print(f"The average processing time is: {avg:.2e} seconds")
