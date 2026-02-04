@@ -1,38 +1,34 @@
-import random
+import json
 import timeit
-from matplotlib import pyplot as plt
-plt.rcParams['figure.figsize'] = [10, 5]
 import numpy as np
+import matplotlib.pyplot as plt
 
+def change_sizes(x):
+    # changes all instances of size incl. nested occurances
+    if isinstance(x, dict):
+        for key in x:
+            if key == 'size':
+                x[key] = 42
+            else:
+                change_sizes(x[key])
+    elif isinstance(x, list):
+        for item in x:
+            change_sizes(item)
 
-def findinlist(n, l):
-    for i in range(len(l)):
-        if l[i] == n:
-            return True
-    return False
+with open("large_file.json", 'r', encoding='utf-8') as f:
+    data = json.load(f)
 
-listlength = 1000
+# time first 1000 records 1000 times
+subset = data[:1000] if isinstance(data, list) else data
+times = timeit.repeat(lambda: change_sizes(subset.copy()), number=1, repeat=1000)
 
-times = []
-for _ in range(1000):
-    numbers = [x for x in range(listlength)]
-    random.shuffle(numbers)
-    tm = timeit.timeit("findinlist(5, numbers)", 
-                       setup="from __main__ import findinlist, numbers", 
-                       number=100)
-    times.append(tm/100)
-
-avg = sum(times) / len(times)
-print("Average time for list of length %d: %f" % (listlength, avg))
-
-plt.figure()
-plt.hist(times, bins=50, edgecolor='black', alpha=0.7)
-plt.xlabel('Processing Time (s)')
+# make histogram
+plt.hist(times, bins=30)
+plt.xlabel('Processing time (seconds)')
 plt.ylabel('Frequency')
-plt.title('Distribution of Processing Times for Linear Search with 1000 trials')
-plt.grid(True, alpha=0.3)
-
 plt.savefig('output.3.3.png')
-plt.show()
+plt.close()
 
-print(f"The average processing time is: {avg:.2e} seconds")
+change_sizes(data)
+with open("output.3.3.test.json", "w", encoding='utf-8') as output_file:
+    json.dump(data[::-1] if isinstance(data, list) else data, output_file, indent=2)

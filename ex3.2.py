@@ -18,7 +18,7 @@ def change_sizes(x):
 with open("large_file.json", 'r', encoding='utf-8') as f:
     data = json.load(f)
 
-# diff. numbers of records
+# time for varying sizes
 listlengths = [1000, 2000, 5000, 10000]
 avgtimes = []
 
@@ -40,5 +40,5 @@ print("The linear model is: t = %.2e * n + %.2e" % (slope, intercept))
 plt.savefig('output.3.2.png')
 
 change_sizes(data)
-with open("output.2.3.test.json", "w", encoding='utf-8') as output_file:
+with open("output.3.2.test.json", "w", encoding='utf-8') as output_file:
     json.dump(data[::-1] if isinstance(data, list) else data, output_file, indent=2)

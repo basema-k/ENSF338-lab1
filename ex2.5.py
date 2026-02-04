@@ -21,7 +21,7 @@ time_taken = timeit.timeit(lambda: change_sizes(x), number=10)
 
 print(f"Average time: {time_taken/10} seconds")
 
-with open("output.2.3.test.json", "w", encoding='utf-8') as output_file:
+with open("output.2.5.test.json", "w", encoding='utf-8') as output_file:
     json.dump(x[::-1], output_file, indent=2)
 
 
